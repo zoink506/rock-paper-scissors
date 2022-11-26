@@ -1,118 +1,78 @@
 let playerScore = 0;
 let computerScore = 0;
 
-
 function getComputerChoice() {
   const rand = Math.random();
   let cpuChoice;
 
   if(rand <= 0.33) {
-    cpuChoice = 0;
+    cpuChoice = "rock";
   } else if(rand <= 0.66) {
-    cpuChoice = 1;
+    cpuChoice = "paper";
   } else {
-    cpuChoice = 2;
+    cpuChoice = "scissors";
   }
 
   return cpuChoice;
 }
 
-function getPlayerChoice() {
-  let playerSelection = prompt("rock, paper, or scissors? Type your selection.");
+function getChoices() {
+  // Place event listener on rock paper scissors divs
+  // When clicked, edit playerSelection
+  // playerSelection set to null by default
+  // If playerselection is not null, continue function 
 
-  if(!playerSelection.localeCompare("rock", undefined, { sensitivity: 'accent'})) {
-    playerSelection = 0;
-  } else if(!playerSelection.localeCompare("paper", undefined, { sensitivity: 'accent'})) {
-    playerSelection = 1;
-  } else if(!playerSelection.localeCompare("scissors", undefined, { sensitivity: 'accent'})) {
-    playerSelection = 2;
-  } else {
-    playerSelection = -1;
-    playerSelection = getPlayerChoice();
-  }
+  const choices = document.querySelectorAll(".choice");
 
-  return playerSelection;
+  choices.forEach(choice => {
+    choice.addEventListener("click", () => {
+      // function that plays rest of game
+      const computerSelection = getComputerChoice();
+      console.log(choice.id);
+      console.log(computerSelection);
+      determineWinner(choice.id, computerSelection);
+
+    });
+  });
 }
 
-function round() {
-  const computerSelection = getComputerChoice();
-  const playerSelection = getPlayerChoice();
-  //console.log("Player selection: ", playerSelection);
-  //console.log("Computer selection: ", computerSelection);
+function determineWinner(choice1, choice2) {
+  if(choice1 === choice2) {
+    console.log(`user choice: ${choice1}`);
+    console.log(`cpu choice: ${choice2}`);
+    console.log("It is a draw!");
+    return;
+  }
 
-  if(computerSelection != -1 && playerSelection != -1) {
+  // Create printing function
+  if(choice1 === "rock") {
+    if(choice2 === "paper") {
+      console.log("Paper beats rock! You lose!");
+    } else {
+      console.log("Rock beats scissors! You win!");
+    }
 
-    if(playerSelection === 0) { // Rock
-      if(computerSelection === 0) {
-        printScore("Draw!");
-        return;
+  } else if(choice1 === "paper") {
+    if(choice2 === "rock") {
+      console.log("Paper beats rock! You win!");
+    } else {
+      console.log("Scissors beats paper! You lose!");
+    }
 
-      } else if(computerSelection === 1) {
-        computerScore += 1;
-        printScore("Paper beats rock!");
-        return;
-
-      } else if(computerSelection === 2) {
-        playerScore += 1;
-        printScore("Rock beats scissors!");
-        return;
-      }
-    } else if(playerSelection === 1) { // Paper
-      if(computerSelection === 0) {
-        playerScore += 1;
-        printScore("Paper beats rock!");
-        return;
-
-      } else if(computerSelection === 1) {
-        printScore("Draw!");
-        return;
-
-      } else if(computerSelection === 2) {
-        computerScore += 1;
-        printScore("Scissors beats paper!");
-        return;
-      }
-
-    } else if(playerSelection === 2) { // Scissors
-      if(computerSelection === 0) {
-        computerScore += 1;
-        printScore("Rock beats scissors");
-        return;
-
-      } else if(computerSelection === 1) {
-        playerScore += 1;
-        printScore("Scissors beats paper!");
-        return;
-
-      } else if(computerSelection === 2) {
-        printScore("Draw!");
-        return;
-      }
-
+  } else if(choice1 === "scissors") {
+    if(choice2 === "rock") {
+      console.log("Rock beats scissors! You lose!");
+    } else {
+      console.log("Scissors beats paper! You win!");
     }
 
   } else {
-    console.warn("Either computerSelection or playerSelection is -1.");
+    console.log("Error, var choice1 not rock, paper, or scissors");
   }
-}
-
-function printScore(message) {
-  console.log(`%c${message}`, "font-size:16px;");
-  console.log(`%cPlayer Score: ${playerScore}`, "color:blue;");
-  console.log(`%cComputer Score: ${computerScore}`, "color:red;");
 }
 
 function game() {
-  while(playerScore < 3 && computerScore < 3) {
-    round();
-  }
-
-  if(playerScore === 3) {
-    console.log("Player wins!");
-  } else {
-    console.log("Computer Wins!");
-  }
-  console.log("Game Over, thanks for playing!");
+  getChoices();
 }
 
 game();

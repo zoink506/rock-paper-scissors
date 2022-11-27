@@ -1,10 +1,12 @@
 /*
 Todo list:
-  - Add score functionality
+  - Add score functionality - DONE
   - End game when score is 3 on either side
+    + Remove event listener when score is higher than 3
+    + Make the arrow function a named function to be able to remove it
   - Add gradient border when hovered over choice
   - Add transition to border and text
-  - Change fonts
+  - Change fonts and font size
   - audio?
 */
 
@@ -27,28 +29,25 @@ function getComputerChoice() {
 }
 
 function getChoices() {
-  // Place event listener on rock paper scissors divs
-  // When clicked, edit playerSelection
-  // playerSelection set to null by default
-  // If playerselection is not null, continue function 
-
   const choices = document.querySelectorAll(".choice");
 
   choices.forEach(choice => {
-    choice.addEventListener("click", () => {
-      // function that plays rest of game
-      const computerSelection = getComputerChoice();
-      console.log(choice.id);
-      console.log(computerSelection);
-      determineWinner(choice.id, computerSelection);
+    applyEventListener(choice);
+  });
+}
 
-    });
+function applyEventListener(element) {
+  element.addEventListener("click", () => {
+    const computerSelection = getComputerChoice();
+    determineWinner(element.id, computerSelection);
+    console.log("THE EVENT LISTENER HAS BEEN TRIGGERED");
   });
 }
 
 function determineWinner(choice1, choice2) {
   let winner;
 
+  // The round is a draw
   if(choice1 === choice2) {
     console.log(`user choice: ${choice1}`);
     console.log(`cpu choice: ${choice2}`);
@@ -58,32 +57,32 @@ function determineWinner(choice1, choice2) {
     return;
   }
 
-  // Create printing function
+  // The round is not a draw, determine the winner
   if(choice1 === "rock") {
     if(choice2 === "paper") {
-      console.log("Paper beats rock! You lose!");
       winner = false;
+      computerScore++;
     } else {
-      console.log("Rock beats scissors! You win!");
       winner = true;
+      playerScore++;
     }
 
   } else if(choice1 === "paper") {
     if(choice2 === "rock") {
-      console.log("Paper beats rock! You win!");
       winner = true;
+      playerScore++;
     } else {
-      console.log("Scissors beats paper! You lose!");
       winner = false;
+      computerScore++;
     }
 
   } else if(choice1 === "scissors") {
     if(choice2 === "rock") {
-      console.log("Rock beats scissors! You lose!");
       winner = false;
+      computerScore++;
     } else {
-      console.log("Scissors beats paper! You win!");
       winner = true;
+      playerScore++;
     }
 
   } else {
@@ -97,7 +96,7 @@ function printUI(choice1, choice2, winner) {
   const textSection = document.querySelector("#win-messages");
 
   // Clear textSection first
-  const previousText = document.querySelectorAll("#win-messages p");
+  const previousText = document.querySelectorAll("#win-messages *");
   previousText.forEach(element => {
     element.remove();
   });
@@ -118,13 +117,21 @@ function printUI(choice1, choice2, winner) {
     console.log("ERROR, winner is not 1, 0, or 'draw'");
   }
 
+  const scoreDiv = document.getElementById("score-div");
+  const scoreDivContent = document.querySelectorAll("#score-div *");
+  scoreDivContent.forEach(element => element.remove());
+
+  const scorePlayer = document.createElement("p");
+  const scoreComputer = document.createElement("p");
+  scorePlayer.innerText = `Player Score: ${playerScore}`;
+  scoreComputer.innerText = `Computer Score: ${computerScore}`;
+  scoreDiv.append(scorePlayer);
+  scoreDiv.append(scoreComputer);
+
+
   textSection.append(playerMessage);
   textSection.append(computerMessage);
   textSection.append(winnerMessage);
 }
 
-function game() {
-  getChoices();
-}
-
-game();
+getChoices();

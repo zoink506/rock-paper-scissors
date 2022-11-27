@@ -94,7 +94,6 @@ function playRound(choice1) {
 
 function gameOver() {
   // Print game over and the winner to screen
-  console.log("GAMEOVER RETARD");
   const gameOverMessage = document.createElement("h2");
   gameOverMessage.innerText = "GAME OVER";
   const scoreDiv = document.querySelector("#score-div");

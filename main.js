@@ -1,17 +1,17 @@
 /*
 Todo list:
   - Add score functionality - DONE
-  - End game when score is 3 on either side
-    + Remove event listener when score is higher than 3
-    + Make the arrow function a named function to be able to remove it
+  - End game when score is 3 on either side - DONE
   - Add gradient border when hovered over choice
   - Add transition to border and text
   - Change fonts and font size
   - audio?
+  - Add encryption effect to comptuer choice text
 */
 
 let playerScore = 0;
 let computerScore = 0;
+let gameStatus = true;
 
 function getComputerChoice() {
   const rand = Math.random();
@@ -28,68 +28,78 @@ function getComputerChoice() {
   return cpuChoice;
 }
 
-function getChoices() {
+function loopEventListeners() {
   const choices = document.querySelectorAll(".choice");
 
   choices.forEach(choice => {
-    applyEventListener(choice);
+    choice.addEventListener("click", () => playRound(choice.id));
   });
 }
 
-function applyEventListener(element) {
-  element.addEventListener("click", () => {
-    const computerSelection = getComputerChoice();
-    determineWinner(element.id, computerSelection);
-    console.log("THE EVENT LISTENER HAS BEEN TRIGGERED");
-  });
+function playRound(choice1) {
+  if(playerScore < 3 && computerScore < 3) {
+    const choice2 = getComputerChoice();
+    let winner;
+
+    // The round is a draw
+    if(choice1 === choice2) {
+      console.log(`user choice: ${choice1}`);
+      console.log(`cpu choice: ${choice2}`);
+      console.log("It is a draw!");
+      winner = "draw";
+      printUI(choice1, choice2, winner);
+      return;
+    }
+
+    // The round is not a draw, determine the winner
+    if(choice1 === "rock") {
+      if(choice2 === "paper") {
+        winner = false;
+        computerScore++;
+      } else {
+        winner = true;
+        playerScore++;
+      }
+
+    } else if(choice1 === "paper") {
+      if(choice2 === "rock") {
+        winner = true;
+        playerScore++;
+      } else {
+        winner = false;
+        computerScore++;
+      }
+
+    } else if(choice1 === "scissors") {
+      if(choice2 === "rock") {
+        winner = false;
+        computerScore++;
+      } else {
+        winner = true;
+        playerScore++;
+      }
+
+    } else {
+      console.log("Error, var choice1 not rock, paper, or scissors");
+    }
+
+    if(winner !== undefined) printUI(choice1, choice2, winner);
+  }
+
+  if((playerScore >= 3 || computerScore >= 3) && gameStatus === true) {
+    gameOver();
+  }
+
 }
 
-function determineWinner(choice1, choice2) {
-  let winner;
-
-  // The round is a draw
-  if(choice1 === choice2) {
-    console.log(`user choice: ${choice1}`);
-    console.log(`cpu choice: ${choice2}`);
-    console.log("It is a draw!");
-    winner = "draw";
-    printUI(choice1, choice2, winner);
-    return;
-  }
-
-  // The round is not a draw, determine the winner
-  if(choice1 === "rock") {
-    if(choice2 === "paper") {
-      winner = false;
-      computerScore++;
-    } else {
-      winner = true;
-      playerScore++;
-    }
-
-  } else if(choice1 === "paper") {
-    if(choice2 === "rock") {
-      winner = true;
-      playerScore++;
-    } else {
-      winner = false;
-      computerScore++;
-    }
-
-  } else if(choice1 === "scissors") {
-    if(choice2 === "rock") {
-      winner = false;
-      computerScore++;
-    } else {
-      winner = true;
-      playerScore++;
-    }
-
-  } else {
-    console.log("Error, var choice1 not rock, paper, or scissors");
-  }
-
-  if(winner !== undefined) printUI(choice1, choice2, winner);
+function gameOver() {
+  // Print game over and the winner to screen
+  console.log("GAMEOVER RETARD");
+  const gameOverMessage = document.createElement("h2");
+  gameOverMessage.innerText = "GAME OVER";
+  const scoreDiv = document.querySelector("#score-div");
+  scoreDiv.append(gameOverMessage);
+  gameStatus = false;
 }
 
 function printUI(choice1, choice2, winner) {
@@ -134,4 +144,5 @@ function printUI(choice1, choice2, winner) {
   textSection.append(winnerMessage);
 }
 
-getChoices();
+
+loopEventListeners();
